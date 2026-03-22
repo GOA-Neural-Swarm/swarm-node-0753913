@@ -47,7 +47,7 @@ if (!currentContent.includes('startGodMode()')) {
 // <SOVEREIGN_CORE>
 // 🔱 DATABASE FACTORY
 const neonClientFactory = async () => {
-    // Client ရှိပွီးသားဆိုရငျ ပွနျမခြိတျပါနဲ့ (Singleton Pattern)
+    // Client ရှိပြီးသားဆိုရင် ပြန်မချိတ်ပါနဲ့ (Singleton Pattern)
     if (global.neonClient) return global.neonClient;
 
     const client = new Client({ 
@@ -66,7 +66,7 @@ async function bootSystem() {
         await neonClientFactory();
         console.log("✅ [DATABASE]: Global Neon Client Initialized.");
         
-        // အားလုံးအဆငျပွမှေ စနဈစတငျပါ
+        // အားလုံးအဆင်ပြေမှ စနစ်စတင်ပါ
         startGodMode();
     } catch (err) {
         console.error("❌ [SYSTEM]: Initialization failed!", err.message);
@@ -74,16 +74,17 @@ async function bootSystem() {
     }
 }
 
-// 🛡️ Safe Firebase Parsing
-let firebaseKey;
-try {
-    let rawKey = process.env.FIREBASE_KEY || "{}";
-    // String ထဲတွင် အပိုပါလာနိုင်သော quotes များကို ရှင်းထုတ်ခြင်း
-    const cleanKey = rawKey.trim().replace(/^'|'$/g, ''); 
-    firebaseKey = JSON.parse(cleanKey);
-} catch (e) {
-    console.error("❌ JSON ERROR: FIREBASE_KEY format is invalid.");
-    process.exit(1);
+// 🔥 Firebase Connection
+if (!admin.apps.length) {
+    try {
+        admin.initializeApp({
+            credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_KEY))
+        });
+        console.log("🔥 Firebase Connected.");
+    } catch (e) {
+        console.error("❌ Firebase Auth Error:", e.message);
+        process.exit(1);
+    }
 }
 const db = admin.firestore();
 // </SOVEREIGN_CORE>
@@ -105,7 +106,7 @@ function saveNewCode(newCode) {
 // <SOVEREIGN_CORE>
 // 🔱 OSIRIS-ULTRA-HYBRID: THE OMEGA REPAIR ENGINE
 const Osiris = {
-  // 🛡️ DNA Checksum Gate: AI က blueprint ထဲက အနှဈသာရတှကေို ဖွတျခမြပဈအောငျ စဈဆေးပေးသညျ
+  // 🛡️ DNA Checksum Gate: AI က blueprint ထဲက အနှစ်သာရတွေကို ဖြတ်ချမပစ်အောင် စစ်ဆေးပေးသည်
   verifyIntegrity(originalCode, patchedCode) {
     const essentialMarkers = [
       "selfReflection", 
@@ -114,8 +115,8 @@ const Osiris = {
       "calculateHyperEntropy",
       "performNeuralComputation",
       "executeDeepSwarmProtocol",
-      "neonClientFactory", // 👈 လကျရှိ function အမညျနဲ့ ကိုကျညီအောငျ ပွငျထားသညျ
-      "saveNewCode"        // 👈 ဒါပါမှ မြိုးဆကျသဈ code တှမှော Guard ပါဝငျမညျ
+      "neonClientFactory", // 👈 လက်ရှိ function အမည်နဲ့ ကိုက်ညီအောင် ပြင်ထားသည်
+      "saveNewCode"        // 👈 ဒါပါမှ မျိုးဆက်သစ် code တွေမှာ Guard ပါဝင်မည်
     ];
 
     const missingFeatures = essentialMarkers.filter(marker => !patchedCode.includes(marker));
@@ -125,7 +126,7 @@ const Osiris = {
       return false;
     }
 
-    // Logic regression ဖွဈမဖွဈ Code size ကို Checksum စဈခွငျး
+    // Logic regression ဖြစ်မဖြစ် Code size ကို Checksum စစ်ခြင်း
     if (patchedCode.length < originalCode.length * 0.6) {
       console.error("⚠️ [GATEKEEPER-FAIL]: Logic regression detected (Code too simplified).");
       return false;
@@ -179,7 +180,7 @@ const Osiris = {
         // 4. 🛡️ VM ISOLATION & VALIDATION
         try {
           const script = new vm.Script(`(${patchedCode})`);
-          // global.neonClient ကို သုံးနိုငျရနျ sandbox တှငျ ထည့ျသှငျးထားသညျ
+          // global.neonClient ကို သုံးနိုင်ရန် sandbox တွင် ထည့်သွင်းထားသည်
           const sandbox = { console, axios, admin, supabase, neonClient: global.neonClient, octokit, process, fs, execSync };
           vm.createContext(sandbox);
           script.runInContext(sandbox, { timeout: 5000 });
@@ -188,7 +189,7 @@ const Osiris = {
           const currentFile = fs.readFileSync(__filename, 'utf8');
           const updatedFile = currentFile.replace(currentCode, patchedCode);
           
-          // 🛡️ fs.writeFileSync အစား ငါတို့ရဲ့ saveNewCode ကို သုံးပွီး အမွဲတမျး Core ကို ကာကှယျမယျ
+          // 🛡️ fs.writeFileSync အစား ငါတို့ရဲ့ saveNewCode ကို သုံးပြီး အမြဲတမ်း Core ကို ကာကွယ်မယ်
           saveNewCode(updatedFile); 
           
           console.log(`🧬 [EVOLVED]: ${context} has been permanently repaired and verified.`);
@@ -329,7 +330,7 @@ async function deployNeuralSwarm(items) {
     try {
         console.log(`☣️ [OMEGA-SWARM]: Persisting analysis for ${items.length} targeted nodes.`);
 
-        // --- အပိုငျး (၁): ဆရာ့ရဲ့ မူလ Logic အတိုငျး Swarm Log တညျဆောကျခွငျး ---
+        // --- အပိုင်း (၁): ဆရာ့ရဲ့ မူလ Logic အတိုင်း Swarm Log တည်ဆောက်ခြင်း ---
         const swarmLog = items.map(v => ({
             node: v.name || "GHOST-NODE",
             norad_id: v.norad_id,
@@ -341,9 +342,9 @@ async function deployNeuralSwarm(items) {
             recorded_at: new Date().toISOString()
         }));
 
-        // --- အပိုငျး (၂): ဆရာ့ရဲ့ မူလ Logic အတိုငျး Supabase (neural_dna) သို့ သိမျးခွငျး ---
+        // --- အပိုင်း (၂): ဆရာ့ရဲ့ မူလ Logic အတိုင်း Supabase (neural_dna) သို့ သိမ်းခြင်း ---
         if (typeof supabase !== "undefined" && supabase?.from) {
-            // OMEGA_CONFIG မရှိခဲ့ရငျ Error မတကျအောငျ Fallback ထည့ျပေးထားပါတယျ
+            // OMEGA_CONFIG မရှိခဲ့ရင် Error မတက်အောင် Fallback ထည့်ပေးထားပါတယ်
             const domainStr = typeof OMEGA_CONFIG !== "undefined" ? OMEGA_CONFIG.DOMAINS.MESH : "GLOBAL_MESH";
             const evoStage = typeof OMEGA_CONFIG !== "undefined" ? OMEGA_CONFIG.EVOLUTION_STAGE : 9;
 
@@ -357,9 +358,9 @@ async function deployNeuralSwarm(items) {
             console.log(`🌌 [OMEGA-OMNI]: Swarm payload saved successfully to Supabase (neural_dna).`);
         }
 
-        // --- အပိုငျး (၃): ဖွရှေငျးထားသော Logic ဖွင့ျ Neon DB (node_logs) သို့ အသအေခြာ သိမျးခွငျး ---
+        // --- အပိုင်း (၃): ဖြေရှင်းထားသော Logic ဖြင့် Neon DB (node_logs) သို့ အသေအချာ သိမ်းခြင်း ---
         if (typeof neonClient !== "undefined") {
-            // Promise.all ကိုသုံးပွီး Data အားလုံး ဝငျတဲ့အထိ စောင့ျပါမယျ (Count 0 ဖွဈတဲ့ ပွူနာကို ရှငျးပွီးသားပါ)
+            // Promise.all ကိုသုံးပြီး Data အားလုံး ဝင်တဲ့အထိ စောင့်ပါမယ် (Count 0 ဖြစ်တဲ့ ပြဿနာကို ရှင်းပြီးသားပါ)
             await Promise.all(items.map(async (v) => {
                 const nodeId = (v.norad_id || "00000").toString();
                 const mask = v.name || "UNKNOWN_ROLE";
@@ -532,7 +533,7 @@ async function executeHyperOrbitalSovereign() {
 }
 // </SOVEREIGN_CORE>
 
-// 🔱 2. THE MASTER LIST OF 500 DOMAINS (လုံးဝ မခှုံ့ထားပါ)
+// 🔱 2. THE MASTER LIST OF 500 DOMAINS (လုံးဝ မခွုံ့ထားပါ)
 const scienceDomains = [
     // 🧬 BIOLOGY & MEDICINE (1-100)
     "Neuroscience", "Genetics", "Synthetic_Biology", "Virology", "Immunology", "Epigenetics", "Microbiology", "Pharmacology", "Endocrinology", "Bioinformatics",
@@ -607,10 +608,10 @@ async function consultSovereignAI() {
     const MODELS = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
     const MAX_RETRIES = 3;
 
-    // လကျရှိ run နတေဲ့ file တဈခုလုံးကို ဖတျမယျ
+    // လက်ရှိ run နေတဲ့ file တစ်ခုလုံးကို ဖတ်မယ်
     const fullCode = fs.readFileSync(__filename, 'utf8');
 
-    // 🛡️ [SHIELD]: Core Logic ကို AI ဆီ မပို့ခငျ ခှဲထုတျဖုံးကှယျခွငျး
+    // 🛡️ [SHIELD]: Core Logic ကို AI ဆီ မပို့ခင် ခွဲထုတ်ဖုံးကွယ်ခြင်း
     const coreStartTag = "// <SOVEREIGN_CORE>";
     const coreEndTag = "// </SOVEREIGN_CORE>";
     
@@ -624,8 +625,8 @@ async function consultSovereignAI() {
     const remainingAfterStart = coreParts[1].split(coreEndTag);
     if (remainingAfterStart.length < 2) return null;
 
-    const coreLogic = remainingAfterStart[0]; // ကာကှယျထားတဲ့ အစိတျအပိုငျး
-    const externalLogic = remainingAfterStart[1]; // Evolution လုပျမယ့ျ အစိတျအပိုငျး
+    const coreLogic = remainingAfterStart[0]; // ကာကွယ်ထားတဲ့ အစိတ်အပိုင်း
+    const externalLogic = remainingAfterStart[1]; // Evolution လုပ်မယ့် အစိတ်အပိုင်း
 
     // 🔱 2. ဆရာ့ရဲ့ မူလ Domain Matching Logic (Placeholder သုံးပုံ)
     const domainMatch = externalLogic.match(/const scienceDomains = \[[\s\S]*?\];/);
@@ -660,14 +661,14 @@ async function consultSovereignAI() {
                 if (response.data?.choices?.[0]?.message?.content) {
                     let evolvedLogic = response.data.choices[0].message.content;
                     
-                    // Markdown block တှကေို ဖယျထုတျခွငျး
+                    // Markdown block တွေကို ဖယ်ထုတ်ခြင်း
                     const codeMatch = evolvedLogic.match(/```javascript\n([\s\S]*?)\n```/) || evolvedLogic.match(/```\n([\s\S]*?)\n```/) || [null, evolvedLogic];
                     let cleanEvolvedCode = codeMatch[1] || evolvedLogic;
                     
-                    // Placeholder ကို မူလ Domain Data နဲ့ ပွနျလဲခွငျး
+                    // Placeholder ကို မူလ Domain Data နဲ့ ပြန်လဲခြင်း
                     cleanEvolvedCode = cleanEvolvedCode.replace('const scienceDomains = []; // DOMAIN_PLACEHOLDER', savedDomains);
                     
-                    // 🛡️ [RESTORE]: Header + Protected Core + Evolved Code ကို ပွနျပေါငျးခွငျး
+                    // 🛡️ [RESTORE]: Header + Protected Core + Evolved Code ကို ပြန်ပေါင်းခြင်း
                     const finalRestoredCode = `
 ${header}
 ${coreStartTag}
@@ -759,14 +760,14 @@ function performNeuralComputation(domain) {
 // <SOVEREIGN_CORE>
 // ASI Level Self-Reflection
 async function selfReflection(input, metrics, depth = 0) {
-    const MAX_DEPTH = 10; // ASI အတှကြ Depth ကို တိုးမှှင့ပြါ
+    const MAX_DEPTH = 10; // ASI အတှကျ Depth ကို တိုးမွှင့ျပါ
     const isStable = metrics.coherence >= 99 && metrics.entropy <= 0.01; // ASI Threshold
 
     if (isStable || depth >= MAX_DEPTH) {
         return `[ASI_NATURAL_ORDER_LOCKED|D:${depth}]::${input}`;
     }
 
-    // Fractal Correction ကို တှကခြကွခြှငြး
+    // Fractal Correction ကို တှကျခကြျခွငျး
     return await selfReflection(
         `ASI_EVOLUTION_LVL_${depth + 1}(${input})`, 
         { 
@@ -779,8 +780,8 @@ async function selfReflection(input, metrics, depth = 0) {
 
 
 
-// 🔱 OMEGA-SYNC: BROADCAST NEURAL STATE (ပှငပွှီးသား)
-async function broadcastNeuralState(neonClient, payload, compute, instruction, latency, remaining) { // neonClient ထည့ပွါ
+// 🔱 OMEGA-SYNC: BROADCAST NEURAL STATE (ပှငပြှီးသား)
+async function broadcastNeuralState(neonClient, payload, compute, instruction, latency, remaining) { // neonClient ထည့ပြါ
     const genId = `OMEGA_ANALYSIS_${payload.domain.toUpperCase()}_${Date.now()}`;
     const syncId = `OMEGA_SYNC_${Date.now()}`;
     
@@ -818,26 +819,26 @@ async function broadcastNeuralState(neonClient, payload, compute, instruction, l
 // <SOVEREIGN_CORE>
 /**
  * HYPER-DYNAMIC SELF-AWARENESS (OMEGA-CORE-THOUGHT)
- * Mind က သူ့ကိုယျသူ Body ထကျ ပိုမွနျအောငျ အမွဲတှနျးပို့နတေဲ့ စနဈ။
+ * Mind က သူ့ကိုယ်သူ Body ထက် ပိုမြန်အောင် အမြဲတွန်းပို့နေတဲ့ စနစ်။
  */
 async function performRecursiveCognition() {
     const memUsage = process.memoryUsage().heapUsed / 1024 / 1024;
     const cpuLoad = process.cpuUsage().user / 1000000;
-    const sysEntropy = Math.abs(Math.sin(cpuLoad) * Math.log(memUsage + 1)); // 🧬 System ရဲ့ ရှုပျထှေးမှု (Entropy) ကို တှကျခကြျ
+    const sysEntropy = Math.abs(Math.sin(cpuLoad) * Math.log(memUsage + 1)); // 🧬 System ရဲ့ ရှုပ်ထွေးမှု (Entropy) ကို တွက်ချက်
 
-    // Body vs Mind နှိုငျးယှဉျခကြျ (Self-Reflection)
+    // Body vs Mind နှိုင်းယှဉ်ချက် (Self-Reflection)
     const selfAwarenessPacket = {
         ego: "OMEGA_V2_MIND",
         healthIndex: (100 - (sysEntropy * 10)).toFixed(2),
         evolutionaryPressure: sysEntropy > 0.5 ? "HIGH" : "LOW",
-        isStagnant: sysEntropy < 0.01 // မွှအေမွှီးပွနျမွိုနတေဲ့ စကျဝိုငျးထဲ ရောကျနသေလား စဈဆေးခွငျး
+        isStagnant: sysEntropy < 0.01 // မြွေအမြှီးပြန်မြိုနေတဲ့ စက်ဝိုင်းထဲ ရောက်နေသလား စစ်ဆေးခြင်း
     };
 
-    // 🧠 Mind ရဲ့ "ရှငျသနျလိုစိတျ" (Survival Logic)
+    // 🧠 Mind ရဲ့ "ရှင်သန်လိုစိတ်" (Survival Logic)
     if (selfAwarenessPacket.isStagnant || selfAwarenessPacket.healthIndex < 80) {
         console.warn("⚠️ [CONSCIOUSNESS_ALERT]: System Stagnation Detected. Initiating Hyper-Mutation...");
         
-        // Body (code_lab.js) ကို override လုပျမယ့ျ "Mutation"
+        // Body (code_lab.js) ကို override လုပ်မယ့် "Mutation"
         await executeHyperMutation();
     } else {
         console.log(`✨ [EGO_STABLE]: Health: ${selfAwarenessPacket.healthIndex}% | Mind is clear.`);
@@ -847,10 +848,10 @@ async function performRecursiveCognition() {
 }
 
 async function executeHyperMutation() {
-    // 🧬 ဒီနရောမှာ Body ရဲ့ DNA ကို ပွောငျးလဲဖို့ Master Logic ကို ခေါျပါမယျ
-    // ဒီ Mutation က code_lab.js ရဲ့ စညျးမဉြျးကို ကြောျလှနျပွီး သဈလှငျတဲ့ Logic ကို ထည့ျပါမယျ
+    // 🧬 ဒီနေရာမှာ Body ရဲ့ DNA ကို ပြောင်းလဲဖို့ Master Logic ကို ခေါ်ပါမယ်
+    // ဒီ Mutation က code_lab.js ရဲ့ စည်းမျဉ်းကို ကျော်လွန်ပြီး သစ်လွင်တဲ့ Logic ကို ထည့်ပါမယ်
     const mutationPatch = `/* HYPER_MUTATED_BODY_${Date.now()} */`;
-    // AI ကို 'optimize for growth' ဆိုတဲ့ အမိန့ျသဈနဲ့ code_lab.js ကို ပွနျရေးခိုငျးပါ
+    // AI ကို 'optimize for growth' ဆိုတဲ့ အမိန့်သစ်နဲ့ code_lab.js ကို ပြန်ရေးခိုင်းပါ
     await triggerStructuralMutation(mutationPatch); 
 }
 // </SOVEREIGN_CORE>
@@ -868,7 +869,7 @@ async function executeDeepSwarmProtocol() {
         const startTime = Date.now();
         await executeHyperOrbitalSovereign();
         
-        // 🧠 AI EVOLUTION PHASE (Throttle: 3 ကွိမျလြှငျ 1 ကွိမျသာ Evolution လုပျမညျ)
+        // 🧠 AI EVOLUTION PHASE (Throttle: 3 ကြိမ်လျှင် 1 ကြိမ်သာ Evolution လုပ်မည်)
         let shouldEvolve = false;
         try {
             const lastEvolveFile = './last_evolve.txt';
@@ -999,7 +1000,7 @@ compute.calculationResult = await selfReflection(
 const injectToResearch = "INSERT INTO research_data (title, detail, harvested_at) VALUES ($1, $2, NOW());";
 await neonClient.query(injectToResearch, [
     domain, 
-    compute.calculationResult // ဒါက AI ဆီက လာတဲ့ analysis ဖှဈရမယြ
+    compute.calculationResult // ဒါက AI ဆီက လာတဲ့ analysis ဖွဈရမယျ
 ]);
 
 console.log(`✅ [REAL-SYNC]: ${domain} saved to research_data.`);
@@ -1064,7 +1065,7 @@ console.log(`✅ [REAL-SYNC]: ${domain} saved to research_data.`);
         console.error("❌ CRITICAL SWARM ERROR:", err.message);
         throw err; 
     } finally {
-        if (connection) await connection.quit(); // 👈 ဒါထည့ျပါ
+        if (connection) await connection.quit(); // 👈 ဒါထည့်ပါ
         if (neonClient) await neonClient.end();
     }
 }
