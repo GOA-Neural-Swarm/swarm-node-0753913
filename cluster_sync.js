@@ -74,17 +74,16 @@ async function bootSystem() {
     }
 }
 
-// 🔥 Firebase Connection
-if (!admin.apps.length) {
-    try {
-        admin.initializeApp({
-            credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_KEY))
-        });
-        console.log("🔥 Firebase Connected.");
-    } catch (e) {
-        console.error("❌ Firebase Auth Error:", e.message);
-        process.exit(1);
-    }
+// 🛡️ Safe Firebase Parsing
+let firebaseKey;
+try {
+    let rawKey = process.env.FIREBASE_KEY || "{}";
+    // String ထဲတွင် အပိုပါလာနိုင်သော quotes များကို ရှင်းထုတ်ခြင်း
+    const cleanKey = rawKey.trim().replace(/^'|'$/g, ''); 
+    firebaseKey = JSON.parse(cleanKey);
+} catch (e) {
+    console.error("❌ JSON ERROR: FIREBASE_KEY format is invalid.");
+    process.exit(1);
 }
 const db = admin.firestore();
 // </SOVEREIGN_CORE>
